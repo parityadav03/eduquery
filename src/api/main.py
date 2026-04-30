@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.rag.chain import ask
+from src.rag.groq_chain import ask
 from src.ingestion.loader import load_pdfs_from_folder
 from src.ingestion.chunker import chunk_pages
 from src.ingestion.embedder import embed_and_store
