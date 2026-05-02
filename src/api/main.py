@@ -38,13 +38,19 @@ class QueryResponse(BaseModel):
 @app.post("/query", response_model=QueryResponse)
 def query(req: QueryRequest):
     start = time.time()
+
+    # auto-create session if it doesn't exist
+    try:
+        create_session(req.session_id)
+    except Exception:
+        pass  # session already exists, that's fine
+
     try:
         result = ask(req.question)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     latency = round((time.time() - start) * 1000)
-
     log_query(
         session_id=req.session_id,
         question=req.question,

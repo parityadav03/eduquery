@@ -7,12 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 COLLECTION_NAME = os.getenv("QDRANT_COLLECTION", "eduquery")
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-EMBEDDING_DIM = 384  # all-MiniLM-L6-v2 output size
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+EMBEDDING_DIM = 384
 
 def get_embedder():
     return HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+def get_client():
+    return QdrantClient(
+        url=QDRANT_URL,
+        api_key=QDRANT_API_KEY
     )
 
 def setup_collection(client: QdrantClient):
@@ -28,7 +35,7 @@ def setup_collection(client: QdrantClient):
 
 def embed_and_store(chunks: list[dict], batch_size: int = 100):
     embedder = get_embedder()
-    client = QdrantClient(url=QDRANT_URL)
+    client = get_client()
     setup_collection(client)
 
     total = len(chunks)
